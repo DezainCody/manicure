@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier Mãos - Experiência Sensorial Adaptativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nude-opaque: #F7F4F0;
+            --offwhite-pearl: #FEFCFA;
+            --gold-trace: #D4AF7A;
+            --charcoal: #2A2A2A;
+            --soft-gray: #8A8A8A;
+            --pristine-white: #FFFFFF;
+            --shadow-ethereal: rgba(42, 42, 42, 0.08);
+            --border-whisper: rgba(212, 175, 122, 0.15);
+            --touch-target: 48px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--charcoal);
+            overflow-x: hidden;
+            background: var(--offwhite-pearl);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+
+
+        /* ============ NAVIGATION ============ */
+        .navbar-desktop {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 60px;
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: transparent;
+            display: none;
+        }
+
+        .navbar-desktop.scrolled {
+            background: rgba(254, 252, 250, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            padding: 20px 60px;
+            border-bottom: 1px solid var(--border-whisper);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 26px;
+            font-weight: 400;
+            color: var(--charcoal);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 45px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 300;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--gold-trace);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--gold-trace);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* ============ MOBILE BOTTOM NAV ============ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(254, 252, 250, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 22px;
+            padding: 10px 16px;
+            box-shadow: 0 8px 25px rgba(42, 42, 42, 0.15);
+            z-index: 1000;
+            display: flex;
+            gap: 25px;
+            border: 1px solid var(--border-whisper);
+        }
+
+        .bottom-nav-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .bottom-nav-item:active {
+            transform: scale(0.9);
+            background: var(--gold-trace);
+        }
+
+        .bottom-nav-item .tooltip {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: var(--charcoal);
+            color: var(--pristine-white);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+            opacity: 0;
+        }
+
+        .bottom-nav-item:active .tooltip {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Water ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(212, 175, 122, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* ============ TABLET NAVBAR ============ */
+        .navbar-tablet {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 40px;
+            z-index: 1000;
+            background: rgba(254, 252, 250, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-whisper);
+            display: none;
+        }
+
+        .hamburger {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: var(--charcoal);
+            transition: all 0.3s ease;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--pristine-white);
+            box-shadow: -10px 0 30px rgba(42, 42, 42, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1001;
+            padding: 80px 40px 40px;
+        }
+
+        .side-menu.open {
+            right: 0;
+        }
+
+        .side-menu-item {
+            display: block;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-whisper);
+            text-decoration: none;
+            color: var(--charcoal);
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .side-menu-item:hover {
+            color: var(--gold-trace);
+        }
+
+        /* ============ SECTION STRUCTURE ============ */
+        .section {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .section-inner {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============ HERO SECTION ============ */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: 
+                linear-gradient(
+                    135deg,
+                    rgba(247, 244, 240, 0.7) 0%,
+                    rgba(245, 241, 235, 0.7) 25%,
+                    rgba(243, 238, 230, 0.7) 50%,
+                    rgba(241, 235, 225, 0.7) 75%,
+                    rgba(254, 252, 250, 0.7) 100%
+                ),
+                url('https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80') center/cover;
+            z-index: 1;
+            transform: translateY(0);
+            transition: transform 0.1s ease-out;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            max-width: 90%;
+            padding: 0 15px;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 6vw, 5.5rem);
+            font-weight: 400;
+            line-height: 1.2;
+            color: var(--charcoal);
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: ink-spread 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.8s;
+        }
+
+        @keyframes ink-spread {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+                filter: blur(2px);
+            }
+            60% {
+                opacity: 0.8;
+                transform: translateY(10px) scale(0.98);
+                filter: blur(1px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+            font-style: italic;
+            color: var(--soft-gray);
+            letter-spacing: 0.5px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fade-slide 1.5s ease forwards 1.8s;
+        }
+
+        @keyframes fade-slide {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-cta {
+            display: inline-block;
+            padding: 14px 30px;
+            min-width: var(--touch-target);
+            min-height: var(--touch-target);
+            background: transparent;
+            color: var(--charcoal);
+            border: 1px solid var(--gold-trace);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0.6px;
+            border-radius: 25px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fade-up 1s ease forwards 2.5s;
+        }
+
+        .hero-cta:active {
+            transform: scale(0.95);
+            background: var(--gold-trace);
+            color: var(--charcoal);
+        }
+
+        @keyframes fade-up {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ SECTION TITLES ============ */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 5vw, 3.5rem);
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--charcoal);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============ DIFFERENTIALS SECTION ============ */
+        .differentials {
+            background: 
+                linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') center/cover;
+        }
+
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            touch-action: pan-x;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .differential-card {
+            min-width: 250px;
+            flex-shrink: 0;
+            padding: 30px 20px;
+            background: var(--nude-opaque);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .differential-card.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .differential-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 10px 25px rgba(42, 42, 42, 0.15);
+        }
+
+        .differential-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+
+        .icon-trace {
+            stroke: var(--gold-trace);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .differential-card.visible .icon-trace {
+            stroke-dashoffset: 0;
+        }
+
+        .differential-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--charcoal);
+            text-align: center;
+        }
+
+        .differential-desc {
+            color: var(--soft-gray);
+            line-height: 1.5;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        /* ============ STORYTELLING SECTION ============ */
+        .storytelling {
+            background: var(--nude-opaque);
+        }
+
+        .story-block {
+            margin-bottom: 80px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .story-block.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .story-text {
+            text-align: center;
+        }
+
+        .story-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.2rem, 4vw, 2.2rem);
+            font-style: italic;
+            line-height: 1.3;
+            color: var(--charcoal);
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .story-description {
+            color: var(--soft-gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .story-image {
+            width: 100%;
+            height: 240px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.1) 100%);
+        }
+
+        /* ============ TIPS SECTION ============ */
+        .tips {
+            background: var(--pristine-white);
+        }
+
+        .tips-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            touch-action: pan-x;
+            padding-bottom: 20px;
+        }
+
+        .tips-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tip-card {
+            min-width: 250px;
+            flex-shrink: 0;
+            height: 320px;
+            background: 
+                linear-gradient(rgba(247, 244, 240, 0.9), rgba(247, 244, 240, 0.9)),
+                url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') center/cover;
+            border-radius: 12px;
+            padding: 25px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tip-card:active {
+            transform: scale(0.98);
+        }
+
+        .tip-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--charcoal);
+        }
+
+        .tip-description {
+            color: var(--soft-gray);
+            line-height: 1.5;
+            flex-grow: 1;
+            font-size: 0.85rem;
+        }
+
+        .tips-cta-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .sensorial-cta {
+            display: inline-block;
+            padding: 14px 28px;
+            min-height: var(--touch-target);
+            background: var(--charcoal);
+            color: var(--pristine-white);
+            text-decoration: none;
+            border-radius: 22px;
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0.4px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sensorial-cta:active {
+            transform: scale(0.95);
+            background: var(--gold-trace);
+            color: var(--charcoal);
+        }
+
+        /* ============ TESTIMONIALS ============ */
+        .testimonials {
+            background: var(--nude-opaque);
+            text-align: center;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .testimonial-item {
+            background: var(--pristine-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(42, 42, 42, 0.08);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .testimonial-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .testimonial-item:active {
+            transform: scale(0.98);
+        }
+
+        .testimonial-video {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) contrast(1.2);
+        }
+
+        .testimonial-text {
+            padding: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--charcoal);
+        }
+
+        .testimonial-author {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-size: 0.75rem;
+            color: var(--soft-gray);
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .central-phrase {
+            margin: 40px 0;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+            font-style: italic;
+            color: var(--charcoal);
+            text-align: center;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.3;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            background: var(--charcoal);
+            color: var(--pristine-white);
+            padding: 40px 20px 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-map {
+            height: 160px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            filter: sepia(20%) contrast(1.1) grayscale(30%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-map-overlay {
+            background: rgba(42, 42, 42, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .footer-section h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--gold-trace);
+            font-weight: 400;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:active {
+            color: var(--gold-trace);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--gold-trace);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .social-icon:active {
+            background: var(--gold-trace);
+            transform: scale(0.9);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+
+        .final-phrase {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--gold-trace);
+        }
+
+        /* ============ TABLET STYLES ============ */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .bottom-nav {
+                display: none;
+            }
+
+            .navbar-tablet {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .section-inner {
+                padding: 100px 40px;
+            }
+
+            .story-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+            }
+
+            .story-content:nth-child(even) {
+                direction: rtl;
+            }
+
+            .story-content:nth-child(even) > * {
+                direction: ltr;
+            }
+
+            .story-text {
+                text-align: left;
+            }
+
+            .story-image {
+                height: 350px;
+            }
+
+            .carousel-track {
+                gap: 30px;
+            }
+
+            .differential-card {
+                min-width: 320px;
+                padding: 50px 40px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+
+            .footer-content {
+                grid-template-columns: 2fr 1fr 1fr;
+                gap: 60px;
+            }
+
+            /* Parallax for tablet */
+            .hero-background {
+                transform: translateY(var(--scroll-y, 0));
+            }
+        }
+
+        /* ============ DESKTOP STYLES ============ */
+        @media (min-width: 1024px) {
+            .bottom-nav {
+                display: none;
+            }
+
+            .navbar-tablet {
+                display: none;
+            }
+
+            .navbar-desktop {
+                display: block;
+            }
+
+            .section-inner {
+                padding: 120px 60px;
+            }
+
+            .hero-title {
+                font-size: 5.5rem;
+            }
+
+            .carousel-track {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 40px;
+                overflow: visible;
+            }
+
+            .differential-card {
+                min-width: auto;
+                padding: 60px 40px;
+            }
+
+            .differential-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 25px 60px rgba(42, 42, 42, 0.15);
+            }
+
+            .story-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 80px;
+            }
+
+            .story-image {
+                height: 400px;
+            }
+
+            .tips-container {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 40px;
+                overflow: visible;
+            }
+
+            .tip-card {
+                min-width: auto;
+                height: 450px;
+            }
+
+            .tip-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 50px rgba(42, 42, 42, 0.15);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 40px;
+            }
+
+            .testimonial-item:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 50px rgba(42, 42, 42, 0.15);
+            }
+
+            /* Breathing animation for desktop */
+            .hero-cta:hover {
+                animation: breathing 2s ease-in-out infinite;
+                box-shadow: 0 15px 40px rgba(212, 175, 122, 0.25);
+            }
+
+            .sensorial-cta:hover {
+                background: var(--gold-trace);
+                color: var(--charcoal);
+                transform: translateY(-3px);
+                box-shadow: 0 15px 35px rgba(212, 175, 122, 0.3);
+            }
+
+            @keyframes breathing {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.03); }
+            }
+        }
+
+        /* ============ ACCESSIBILITY ============ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        a:focus,
+        button:focus,
+        .bottom-nav-item:focus {
+            outline: 2px solid var(--gold-trace);
+            outline-offset: 2px;
+        }
+
+        /* ============ FONT LIGATURES FOR TABLET+ ============ */
+        @media (min-width: 768px) {
+            .story-quote,
+            .section-title,
+            .hero-title {
+                font-feature-settings: "liga" 1, "dlig" 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Desktop Navigation -->
+    <nav class="navbar-desktop" id="navbar-desktop">
+        <div class="nav-container">
+            <a href="#" class="logo">Atelier Mãos</a>
+            <ul class="nav-menu">
+                <li><a href="#experiencia" class="nav-link">Experiência</a></li>
+                <li><a href="#essencia" class="nav-link">Essência</a></li>
+                <li><a href="#sabedoria" class="nav-link">Sabedoria</a></li>
+                <li><a href="#historias" class="nav-link">Histórias</a></li>
+                <li><a href="#contato" class="nav-link">Contato</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Tablet Navigation -->
+    <nav class="navbar-tablet" id="navbar-tablet">
+        <a href="#" class="logo">Atelier Mãos</a>
+        <div class="hamburger" onclick="toggleSideMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+        <a href="#experiencia" class="side-menu-item" onclick="toggleSideMenu()">Experiência</a>
+        <a href="#essencia" class="side-menu-item" onclick="toggleSideMenu()">Essência</a>
+        <a href="#sabedoria" class="side-menu-item" onclick="toggleSideMenu()">Sabedoria</a>
+        <a href="#historias" class="side-menu-item" onclick="toggleSideMenu()">Histórias</a>
+        <a href="#contato" class="side-menu-item" onclick="toggleSideMenu()">Contato</a>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-item" onclick="scrollToSection('hero')">
+            <span style="font-size: 18px;">🏠</span>
+            <div class="tooltip">Início</div>
+        </div>
+        <div class="bottom-nav-item" onclick="scrollToSection('contato')">
+            <span style="font-size: 18px;">📅</span>
+            <div class="tooltip">Agendar</div>
+        </div>
+        <div class="bottom-nav-item" onclick="scrollToSection('sabedoria')">
+            <span style="font-size: 18px;">💡</span>
+            <div class="tooltip">Dicas</div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero section" id="hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Beleza que começa nas pontas dos dedos.</h1>
+            <p class="hero-subtitle">onde cada gesto é uma obra de arte</p>
+            <a href="#contato" class="hero-cta" onclick="createRipple(event)">Reserve sua experiência</a>
+        </div>
+    </section>
+
+    <!-- Differentials Section -->
+    <section class="section differentials" id="experiencia">
+        <div class="section-inner">
+            <h2 class="section-title">Microuniversos de cuidado</h2>
+            <div class="carousel-container">
+                <div class="carousel-track" id="carousel">
+                    <div class="differential-card">
+                        <div class="differential-icon">
+                            <svg viewBox="0 0 60 60">
+                                <path class="icon-trace" d="M15,30 Q30,10 45,30 Q30,50 15,30 M25,30 L35,30 M30,25 L30,35"/>
+                            </svg>
+                        </div>
+                        <h3 class="differential-title">Diagnóstico sensorial</h3>
+                        <p class="differential-desc">Leitura personalizada da pele e unhas, mapeando necessidades únicas através do toque consciente.</p>
+                    </div>
+                    <div class="differential-card">
+                        <div class="differential-icon">
+                            <svg viewBox="0 0 60 60">
+                                <path class="icon-trace" d="M10,30 C10,15 20,5 30,5 C40,5 50,15 50,30 C50,45 40,55 30,55 C20,55 10,45 10,30 M20,25 Q30,20 40,25 M20,35 Q30,40 40,35"/>
+                            </svg>
+                        </div>
+                        <h3 class="differential-title">Criação exclusiva</h3>
+                        <p class="differential-desc">Design artesanal único, nascido da alquimia entre sua essência e nossa visão estética.</p>
+                    </div>
+                    <div class="differential-card">
+                        <div class="differential-icon">
+                            <svg viewBox="0 0 60 60">
+                                <path class="icon-trace" d="M30,5 L35,20 L50,20 L38,30 L43,45 L30,35 L17,45 L22,30 L10,20 L25,20 Z"/>
+                            </svg>
+                        </div>
+                        <h3 class="differential-title">Atmosfera sensorial</h3>
+                        <p class="differential-desc">Ambiente aromático calibrado e trilha sonora que induz estados profundos de relaxamento.</p>
+                    </div>
+                    <div class="differential-card">
+                        <div class="differential-icon">
+                            <svg viewBox="0 0 60 60">
+                                <path class="icon-trace" d="M15,45 Q30,25 45,45 M20,40 Q30,30 40,40 M25,35 Q30,32 35,35 M15,15 Q30,5 45,15"/>
+                            </svg>
+                        </div>
+                        <h3 class="differential-title">Produtos conscientes</h3>
+                        <p class="differential-desc">Cosméticos veganos de origem europeia, escolhidos por sua pureza e performance excepcional.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Storytelling Section -->
+    <section class="section storytelling" id="essencia">
+        <div class="section-inner">
+            <h2 class="section-title">Nossa essência</h2>
+            
+            <div class="story-block">
+                <div class="story-content">
+                    <div class="story-text">
+                        <h2 class="story-quote">Não fazemos apenas unhas. Traduzimos estados de espírito em forma e cor.</h2>
+                        <p class="story-description">Cada sessão é um encontro entre sua essência interior e nossa expertise artística, criando não apenas beleza, mas um momento de reconexão profunda consigo mesma.</p>
+                    </div>
+                    <div class="story-image" style="background-image: url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80')"></div>
+                </div>
+            </div>
+
+            <div class="story-block">
+                <div class="story-content">
+                    <div class="story-image" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
+                    <div class="story-text">
+                        <h2 class="story-quote">Cada sessão é um convite ao silêncio interno.</h2>
+                        <p class="story-description">Aqui, o tempo assume outro ritmo. Cada gesto é deliberado, cada momento é presente, criando um ritual de autocuidado que transcende o estético.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-block">
+                <div class="story-content">
+                    <div class="story-text">
+                        <h2 class="story-quote">Aqui, a estética serve ao bem-estar — não o contrário.</h2>
+                        <p class="story-description">Priorizamos sua paz interior acima de tudo. A beleza surge naturalmente quando corpo e mente estão em harmonia completa.</p>
+                    </div>
+                    <div class="story-image" style="background-image: url('https://images.unsplash.com/photo-1515688594390-b649af70d282?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1452&q=80')"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section class="section tips" id="sabedoria">
+        <div class="section-inner">
+            <h2 class="section-title">Sabedoria sensorial</h2>
+            <div class="tips-container">
+                <div class="tip-card">
+                    <h3 class="tip-title">Ritual do óleo dourado</h3>
+                    <p class="tip-description">Desperte suas cutículas com óleo de jojoba aquecido entre as palmas. Massageie em círculos lentos, respirando profundamente a cada movimento.</p>
+                </div>
+                <div class="tip-card">
+                    <h3 class="tip-title">Meditação das mãos</h3>
+                    <p class="tip-description">Durante o cuidado, pratique a respiração 4-7-8: inspire por 4, retenha por 7, expire por 8. Transforme cuidado em mindfulness.</p>
+                </div>
+                <div class="tip-card">
+                    <h3 class="tip-title">Jejum do esmalte</h3>
+                    <p class="tip-description">Permita que suas unhas respirem. Uma pausa de 24h entre esmaltações fortalece a queratina e revela a beleza natural.</p>
+                </div>
+                <div class="tip-card">
+                    <h3 class="tip-title">Hidratação noturna</h3>
+                    <p class="tip-description">Antes de dormir, aplique óleo de amêndoas nas cutículas e massageie suavemente. É quando a regeneração celular é mais intensa.</p>
+                </div>
+            </div>
+            <div class="tips-cta-container">
+                <a href="#" class="sensorial-cta" onclick="createRipple(event)">Receber dicas semanais com aroma de autocuidado</a>
+                <p style="margin-top: 15px; color: var(--soft-gray); font-style: italic;">Conteúdo curado, zero ruído</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="historias">
+        <div class="section-inner">
+            <h2 class="section-title">Palavras que ecoam</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-item">
+                    <div class="testimonial-video" style="background-image: url('https://images.unsplash.com/photo-1588392382834-a891154bca4d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
+                    <div class="testimonial-text">
+                        "Não é manicure. É terapia através das mãos. Saio renovada em camadas que nem sabia que existiam."
+                        <p class="testimonial-author">— Maria Helena, arquiteta</p>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <div class="testimonial-video" style="background-image: url('https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')"></div>
+                    <div class="testimonial-text">
+                        "Minhas unhas se tornaram parte da minha identidade. Cada criação conta uma história que só eu sei."
+                        <p class="testimonial-author">— Camila Santos, designer</p>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <div class="testimonial-video" style="background-image: url('https://images.unsplash.com/photo-1519014816548-bf5fe059798b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"></div>
+                    <div class="testimonial-text">
+                        "Aqui encontrei um refúgio urbano. Um espaço onde posso simplesmente ser, sem pressa ou expectativas."
+                        <p class="testimonial-author">— Julia Morais, psicóloga</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="central-phrase">
+                Cada toque conta uma história — e cada história deixa sua marca.
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer section" id="contato">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-map" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80')">
+                    <div class="footer-map-overlay">
+                        <h4 style="margin-bottom: 10px;">Localização</h4>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">Rua da Contemplação, 42<br>Bairro dos Artistas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Contato</h3>
+                <p>📍 Rua da Contemplação, 42<br>
+                Bairro dos Artistas<br>
+                João Pessoa, PB</p>
+                <p style="margin-top: 20px;">
+                    <a href="tel:+5583999999999">(83) 99999-9999</a><br>
+                    <a href="mailto:contato@ateliermanoes.com">contato@ateliermanoes.com</a>
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Horário contemplativo</h3>
+                <p>Segunda a Sexta<br>10h às 18h</p>
+                <p>Sábado<br>9h às 15h</p>
+                <p style="margin-top: 20px; font-style: italic; color: var(--gold-trace);">
+                    Domingo para descanso e renovação
+                </p>
+                <div class="social-icons">
+                    <div class="social-icon" onclick="createRipple(event)">📷</div>
+                    <div class="social-icon" onclick="createRipple(event)">💌</div>
+                    <div class="social-icon" onclick="createRipple(event)">🎵</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="final-phrase">
+                Feito para mãos que vivem, sentem e criam.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ============ DEVICE DETECTION ============
+        const isMobile = window.innerWidth < 768;
+        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+        const isDesktop = window.innerWidth >= 1024;
+
+        // ============ NAVIGATION ============
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function toggleSideMenu() {
+            const sideMenu = document.getElementById('side-menu');
+            sideMenu.classList.toggle('open');
+        }
+
+        // Navbar scroll effect (desktop)
+        if (isDesktop) {
+            const navbar = document.getElementById('navbar-desktop');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // ============ RIPPLE EFFECT ============
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+            circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = button.getElementsByClassName('ripple')[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+
+            // Haptic feedback for mobile
+            if (isMobile && 'vibrate' in navigator) {
+                navigator.vibrate(10);
+            }
+        }
+
+        // ============ INTERSECTION OBSERVER ============
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    // Stagger animations
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements
+        document.querySelectorAll('.section-title, .differential-card, .story-block, .testimonial-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ============ PARALLAX EFFECTS ============
+        if (isTablet || isDesktop) {
+            const heroBackground = document.querySelector('.hero-background');
+            
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.3;
+                heroBackground.style.transform = `translateY(${rate}px)`;
+            });
+        }
+
+        // ============ MOBILE TOUCH ENHANCEMENTS ============
+        if (isMobile) {
+            // Touch gestures for carousels
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            const carousels = document.querySelectorAll('.carousel-track, .tips-container');
+            
+            carousels.forEach(carousel => {
+                carousel.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    isDragging = true;
+                    carousel.style.transition = 'none';
+                });
+
+                carousel.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    currentX = e.touches[0].clientX;
+                    const diffX = startX - currentX;
+                    carousel.scrollLeft += diffX;
+                    startX = currentX;
+                });
+
+                carousel.addEventListener('touchend', () => {
+                    isDragging = false;
+                    carousel.style.transition = '';
+                });
+            });
+
+            // Enhanced touch targets and touch feedback
+            document.querySelectorAll('.differential-card, .tip-card, .testimonial-item, .hero-cta, .sensorial-cta').forEach(el => {
+                el.addEventListener('touchstart', () => {
+                    el.style.transform = 'scale(0.98)';
+                });
+                
+                el.addEventListener('touchend', () => {
+                    setTimeout(() => {
+                        el.style.transform = '';
+                    }, 150);
+                });
+            });
+        }
+
+        // ============ TABLET OPTIMIZATIONS ============
+        if (isTablet) {
+            // Enhanced touch areas
+            document.querySelectorAll('.differential-card, .tip-card').forEach(el => {
+                el.addEventListener('touchstart', () => {
+                    el.style.boxShadow = '0 15px 40px rgba(42, 42, 42, 0.2)';
+                });
+                
+                el.addEventListener('touchend', () => {
+                    setTimeout(() => {
+                        el.style.boxShadow = '';
+                    }, 300);
+                });
+            });
+        }
+
+        // ============ SMOOTH SCROLLING ============
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ============ PERFORMANCE OPTIMIZATIONS ============
+        // Lazy load images
+        const images = document.querySelectorAll('[style*="background-image"]');
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    imageObserver.unobserve(entry.target);
+                }
+            });
+        });
+
+        images.forEach(img => {
+            img.style.opacity = '0';
+            img.style.transition = 'opacity 0.6s ease';
+            imageObserver.observe(img);
+        });
+
+        // ============ ACCESSIBILITY ============
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-nav');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-nav');
+        });
+
+        // Reduced motion support
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.style.scrollBehavior = 'auto';
+        }
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show appropriate navigation
+            if (isMobile) {
+                document.querySelector('.bottom-nav').style.display = 'flex';
+            } else if (isTablet) {
+                document.querySelector('.navbar-tablet').style.display = 'flex';
+            } else {
+                document.querySelector('.navbar-desktop').style.display = 'block';
+            }
+
+            // Initialize intersection observers
+            setTimeout(() => {
+                document.querySelectorAll('.differential-card').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 200);
+                });
+            }, 500);
+
+            // Add ARIA labels for accessibility
+            document.querySelectorAll('.bottom-nav-item').forEach((item, index) => {
+                const labels = ['Início', 'Agendar', 'Dicas'];
+                item.setAttribute('aria-label', labels[index]);
+                item.setAttribute('role', 'button');
+            });
+        });
+    </script>
+</body>
+</html>
